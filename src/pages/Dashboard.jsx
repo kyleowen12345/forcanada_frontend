@@ -16,7 +16,7 @@ const Dashboard = () => {
           Welcome - {currentUser.name}
       </Heading>
       <Text color={'gray.500'}>
-         I you are reading this then you are authenticated 
+         If you are reading this then you are authenticated 
       </Text>
        <Button
        onClick={()=>signOut()}
