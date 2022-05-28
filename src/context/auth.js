@@ -35,7 +35,7 @@ function useProvideAuth(){
     
     const userCookie=Cookies.get('forcanada')
  
-    console.log(location)
+   
 
     
     const signup=async (name,email,password)=>{
@@ -87,7 +87,7 @@ function useProvideAuth(){
            }
     }
 
-    const signOut= ()=>{
+    const signOut=useCallback (()=>{
       fetch(`${process.env.REACT_APP_API_KEY}/logout`, {
         method: 'POST',
         headers: {
@@ -106,7 +106,7 @@ function useProvideAuth(){
         Cookies.remove('forcanada')
         navigate('/login')
       });
-    }
+    },[navigate,userCookie])
     
     const validUser =useCallback(()=>{
       setLoadingAuth(true)
@@ -115,15 +115,14 @@ function useProvideAuth(){
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userCookie}`
+            'Authorization': `Bearer ${userCookie}`,
+            'Access-Control-Allow-Origin': process.env.REACT_APP_HEADER_KEY
         },
     })
       .then(response => response.json())
       .then((res) => {
           if(res.error){
-            Cookies.remove('forcanada')
-            navigate('/login')
-            setAuthentication(false)
+            signOut()
           }else{
             setAuthentication(true)
             setCurrentUser(res.user)
@@ -132,10 +131,9 @@ function useProvideAuth(){
           
       })
       .catch(e => {
-        Cookies.remove('forcanada')
-        navigate('/login')
+        signOut()
       });
-    },[userCookie,navigate]) 
+    },[userCookie,signOut]) 
       
       
        
@@ -149,7 +147,7 @@ function useProvideAuth(){
         
     },[validUser,location.pathname])
 
-    console.log(authenticated)
+   
     return {
     signup,
     login,
